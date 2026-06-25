@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgentHub Admin Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="min-h-full bg-stone-100 text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+    <div class="min-h-screen lg:flex">
+      <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 flex w-80 -translate-x-full flex-col border-r border-slate-200 bg-white/95 shadow-2xl shadow-slate-300/30 backdrop-blur transition-transform duration-300 dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-black/30 lg:static lg:translate-x-0">
+        <div class="border-b border-slate-200 px-6 py-6 dark:border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-cyan-500 via-sky-500 to-emerald-500 text-lg font-black text-white shadow-lg shadow-cyan-500/30">AH</div>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">AgentHub</p>
+              <h1 class="text-xl font-black text-slate-900 dark:text-white">Control de agentes</h1>
+            </div>
+          </div>
+        </div>
+
+        <nav class="flex-1 space-y-2 overflow-y-auto px-4 py-5" aria-label="Secciones principales">
+          <button data-section-target="dashboard" class="nav-link flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition hover:bg-slate-100 dark:hover:bg-slate-800" type="button">
+            <span class="font-semibold">Dashboard</span>
+            <span class="rounded-full bg-sky-500/10 px-2 py-1 text-xs font-bold text-sky-700 dark:text-sky-300">01</span>
+          </button>
+          <button data-section-target="usuarios" class="nav-link flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition hover:bg-slate-100 dark:hover:bg-slate-800" type="button">
+            <span class="font-semibold">Gestión de usuarios</span>
+            <span class="rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">02</span>
+          </button>
+          <button data-section-target="agentes" class="nav-link flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition hover:bg-slate-100 dark:hover:bg-slate-800" type="button">
+            <span class="font-semibold">Gestión de agentes</span>
+            <span class="rounded-full bg-violet-500/10 px-2 py-1 text-xs font-bold text-violet-700 dark:text-violet-300">03</span>
+          </button>
+          <button data-section-target="skills" class="nav-link flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition hover:bg-slate-100 dark:hover:bg-slate-800" type="button">
+            <span class="font-semibold">Skills</span>
+            <span class="rounded-full bg-amber-500/10 px-2 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">04</span>
+          </button>
+          <button data-section-target="contrataciones" class="nav-link flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition hover:bg-slate-100 dark:hover:bg-slate-800" type="button">
+            <span class="font-semibold">Contrataciones</span>
+            <span class="rounded-full bg-rose-500/10 px-2 py-1 text-xs font-bold text-rose-700 dark:text-rose-300">05</span>
+          </button>
+          <button data-section-target="errores" class="nav-link flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition hover:bg-slate-100 dark:hover:bg-slate-800" type="button">
+            <span class="font-semibold">Log de errores</span>
+            <span class="rounded-full bg-orange-500/10 px-2 py-1 text-xs font-bold text-orange-700 dark:text-orange-300">06</span>
+          </button>
+        </nav>
+
+        <div class="border-t border-slate-200 px-4 py-4 dark:border-slate-800">
+          <div class="rounded-3xl bg-slate-950 px-4 py-4 text-white dark:bg-slate-800">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Monitoreo</p>
+            <p class="mt-2 text-sm leading-6 text-slate-200">17 contratos activos, 4 agentes críticos y 2 errores de alta prioridad pendientes.</p>
+          </div>
+        </div>
+      </aside>
+
+      <div id="sidebar-backdrop" class="fixed inset-0 z-30 hidden bg-slate-950/40 backdrop-blur-sm lg:hidden"></div>
+
+      <div class="flex min-h-screen flex-1 flex-col lg:pl-0">
+        <header class="sticky top-0 z-20 border-b border-slate-200 bg-stone-100/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/85">
+          <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-3">
+              <button id="open-sidebar" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600 lg:hidden" type="button" aria-label="Abrir menú lateral">
+                <span class="text-xl">☰</span>
+              </button>
+              <div>
+                <p id="section-kicker" class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500 dark:text-slate-400">Vista activa</p>
+                <h2 id="section-title" class="text-2xl font-black text-slate-900 dark:text-white">Dashboard</h2>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="hidden rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 sm:block">Administrador: Nico Cabrera</div>
+              <button id="theme-toggle" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600" type="button" aria-pressed="false">
+                <span id="theme-icon">☀</span>
+                <span id="theme-label">Modo oscuro</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <main class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8">
+          <section data-section="dashboard" class="page-section space-y-8">
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <article class="rounded-3xl border border-sky-200 bg-white p-6 shadow-lg shadow-sky-100/70 dark:border-sky-900/60 dark:bg-slate-900 dark:shadow-none">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Ingresos totales</p>
+                    <p class="mt-3 text-3xl font-black text-slate-900 dark:text-white">€128.400</p>
+                  </div>
+                  <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500 text-xl text-white">↗</div>
+                </div>
+                <p class="mt-4 text-sm text-sky-700 dark:text-sky-300">+12% respecto al mes pasado</p>
+              </article>
+
+              <article class="rounded-3xl border border-rose-200 bg-white p-6 shadow-lg shadow-rose-100/70 dark:border-rose-900/60 dark:bg-slate-900 dark:shadow-none">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Pérdidas por descuentos</p>
+                    <p class="mt-3 text-3xl font-black text-slate-900 dark:text-white">€8.230</p>
+                  </div>
+                  <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500 text-xl text-white">%</div>
+                </div>
+                <p class="mt-4 text-sm text-rose-700 dark:text-rose-300">4 promociones activas en seguimiento</p>
+              </article>
+
+              <article class="rounded-3xl border border-emerald-200 bg-white p-6 shadow-lg shadow-emerald-100/70 dark:border-emerald-900/60 dark:bg-slate-900 dark:shadow-none">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Agentes activos</p>
+                    <p class="mt-3 text-3xl font-black text-slate-900 dark:text-white">14</p>
+                  </div>
+                  <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500 text-xl text-white">✓</div>
+                </div>
+                <p class="mt-4 text-sm text-emerald-700 dark:text-emerald-300">11 en producción y 3 en piloto</p>
+              </article>
+
+              <article class="rounded-3xl border border-amber-200 bg-white p-6 shadow-lg shadow-amber-100/70 dark:border-amber-900/60 dark:bg-slate-900 dark:shadow-none">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Agentes fallando</p>
+                    <p class="mt-3 text-3xl font-black text-slate-900 dark:text-white">4</p>
+                  </div>
+                  <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500 text-xl text-white">!</div>
+                </div>
+                <p class="mt-4 text-sm text-amber-700 dark:text-amber-300">2 requieren intervención inmediata</p>
+              </article>
+            </div>
+
+            <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+              <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Actividad semanal</p>
+                  <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">Rendimiento operativo</h3>
+                </div>
+                <div class="flex flex-wrap gap-2 text-xs font-semibold">
+                  <span class="rounded-full bg-sky-500/10 px-3 py-1 text-sky-700 dark:text-sky-300">Consultas resueltas</span>
+                  <span class="rounded-full bg-emerald-500/10 px-3 py-1 text-emerald-700 dark:text-emerald-300">Contratos cerrados</span>
+                  <span class="rounded-full bg-rose-500/10 px-3 py-1 text-rose-700 dark:text-rose-300">Incidencias</span>
+                </div>
+              </div>
+              <div class="mt-8 grid h-72 grid-cols-7 items-end gap-3 rounded-3xl bg-linear-to-br from-slate-50 to-sky-50 p-5 dark:from-slate-950 dark:to-slate-900">
+                <div class="flex h-full flex-col justify-end gap-2"><div class="h-[52%] rounded-t-2xl bg-sky-400"></div><span class="text-center text-xs font-semibold text-slate-500 dark:text-slate-400">L</span></div>
+                <div class="flex h-full flex-col justify-end gap-2"><div class="h-[68%] rounded-t-2xl bg-emerald-400"></div><span class="text-center text-xs font-semibold text-slate-500 dark:text-slate-400">M</span></div>
+                <div class="flex h-full flex-col justify-end gap-2"><div class="h-[74%] rounded-t-2xl bg-sky-500"></div><span class="text-center text-xs font-semibold text-slate-500 dark:text-slate-400">X</span></div>
+                <div class="flex h-full flex-col justify-end gap-2"><div class="h-[46%] rounded-t-2xl bg-rose-400"></div><span class="text-center text-xs font-semibold text-slate-500 dark:text-slate-400">J</span></div>
+                <div class="flex h-full flex-col justify-end gap-2"><div class="h-[83%] rounded-t-2xl bg-emerald-500"></div><span class="text-center text-xs font-semibold text-slate-500 dark:text-slate-400">V</span></div>
+                <div class="flex h-full flex-col justify-end gap-2"><div class="h-[58%] rounded-t-2xl bg-amber-400"></div><span class="text-center text-xs font-semibold text-slate-500 dark:text-slate-400">S</span></div>
+                <div class="flex h-full flex-col justify-end gap-2"><div class="h-[39%] rounded-t-2xl bg-sky-300"></div><span class="text-center text-xs font-semibold text-slate-500 dark:text-slate-400">D</span></div>
+              </div>
+            </section>
+          </section>
+
+          <section data-section="usuarios" class="page-section hidden space-y-6">
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Clientes y cuentas</p>
+                  <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">Gestión de usuarios</h3>
+                </div>
+                <div class="rounded-2xl bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">5 usuarios activos en seguimiento</div>
+              </div>
+              <div class="mt-6 overflow-x-auto">
+                <table class="min-w-full border-separate border-spacing-y-3">
+                  <thead>
+                    <tr class="text-left text-xs font-semibold uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">
+                      <th class="px-4 py-2">Nombre</th>
+                      <th class="px-4 py-2">Email</th>
+                      <th class="px-4 py-2">Plan</th>
+                      <th class="px-4 py-2">Estado</th>
+                      <th class="px-4 py-2 text-right">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-sm text-slate-700 dark:text-slate-200">
+                    <tr class="rounded-2xl bg-stone-50 shadow-sm dark:bg-slate-950">
+                      <td class="rounded-l-2xl px-4 py-4 font-semibold">Lara Mendoza</td><td class="px-4 py-4">lara@northscale.ai</td><td class="px-4 py-4">Enterprise</td><td class="px-4 py-4"><span class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">Activo</span></td><td class="rounded-r-2xl px-4 py-4 text-right"><div class="relative inline-block"><button data-dropdown-button="user-1" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="user-1" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="user-detail" data-detail-key="lara" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div></td>
+                    </tr>
+                    <tr class="rounded-2xl bg-stone-50 shadow-sm dark:bg-slate-950">
+                      <td class="rounded-l-2xl px-4 py-4 font-semibold">Andrés Costa</td><td class="px-4 py-4">andres@fluxworks.io</td><td class="px-4 py-4">Growth</td><td class="px-4 py-4"><span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">Pendiente</span></td><td class="rounded-r-2xl px-4 py-4 text-right"><div class="relative inline-block"><button data-dropdown-button="user-2" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="user-2" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="user-detail" data-detail-key="andres" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div></td>
+                    </tr>
+                    <tr class="rounded-2xl bg-stone-50 shadow-sm dark:bg-slate-950">
+                      <td class="rounded-l-2xl px-4 py-4 font-semibold">Noelia Ruiz</td><td class="px-4 py-4">noelia@latamops.com</td><td class="px-4 py-4">Starter</td><td class="px-4 py-4"><span class="rounded-full bg-sky-500/10 px-3 py-1 text-xs font-bold text-sky-700 dark:text-sky-300">Prueba</span></td><td class="rounded-r-2xl px-4 py-4 text-right"><div class="relative inline-block"><button data-dropdown-button="user-3" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="user-3" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="user-detail" data-detail-key="noelia" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div></td>
+                    </tr>
+                    <tr class="rounded-2xl bg-stone-50 shadow-sm dark:bg-slate-950">
+                      <td class="rounded-l-2xl px-4 py-4 font-semibold">Paula Serrano</td><td class="px-4 py-4">paula@signalgrid.ai</td><td class="px-4 py-4">Enterprise</td><td class="px-4 py-4"><span class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">Activo</span></td><td class="rounded-r-2xl px-4 py-4 text-right"><div class="relative inline-block"><button data-dropdown-button="user-4" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="user-4" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="user-detail" data-detail-key="paula" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div></td>
+                    </tr>
+                    <tr class="rounded-2xl bg-stone-50 shadow-sm dark:bg-slate-950">
+                      <td class="rounded-l-2xl px-4 py-4 font-semibold">Gabriel Ponce</td><td class="px-4 py-4">gabriel@deltaassist.co</td><td class="px-4 py-4">Scale</td><td class="px-4 py-4"><span class="rounded-full bg-violet-500/10 px-3 py-1 text-xs font-bold text-violet-700 dark:text-violet-300">Onboarding</span></td><td class="rounded-r-2xl px-4 py-4 text-right"><div class="relative inline-block"><button data-dropdown-button="user-5" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="user-5" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="user-detail" data-detail-key="gabriel" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section data-section="agentes" class="page-section hidden space-y-6">
+            <div class="grid gap-5 xl:grid-cols-2">
+              <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Agente 01</p>
+                    <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">Astra Support</h3>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Propietaria: Paula Serrano</p>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">Activo</span>
+                    <div class="relative"><button data-dropdown-button="agent-1" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="agent-1" class="hidden absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-950"><button data-modal-open="agent-config" data-detail-key="astra" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Configurar</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div>
+                  </div>
+                </div>
+                <button data-collapse-button="astra-skills" class="mt-6 flex w-full items-center justify-between rounded-2xl bg-slate-100 px-4 py-3 text-left font-semibold text-slate-700 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" type="button" aria-expanded="false">
+                  <span>Skills habilitadas</span>
+                  <span data-collapse-icon="astra-skills">+</span>
+                </button>
+                <div data-collapse-panel="astra-skills" class="grid max-h-0 overflow-hidden transition-all duration-300 ease-out">
+                  <ul class="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                    <li class="rounded-2xl bg-sky-50 px-4 py-3 dark:bg-slate-800">Lead scoring B2B</li>
+                    <li class="rounded-2xl bg-sky-50 px-4 py-3 dark:bg-slate-800">Resumen de tickets</li>
+                    <li class="rounded-2xl bg-sky-50 px-4 py-3 dark:bg-slate-800">Clasificación de urgencias</li>
+                  </ul>
+                </div>
+              </article>
+
+              <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Agente 02</p>
+                    <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">Orion Sales</h3>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Propietario: Andrés Costa</p>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">Piloto</span>
+                    <div class="relative"><button data-dropdown-button="agent-2" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="agent-2" class="hidden absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-950"><button data-modal-open="agent-config" data-detail-key="orion" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Configurar</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div>
+                  </div>
+                </div>
+                <button data-collapse-button="orion-skills" class="mt-6 flex w-full items-center justify-between rounded-2xl bg-slate-100 px-4 py-3 text-left font-semibold text-slate-700 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" type="button" aria-expanded="false">
+                  <span>Skills habilitadas</span>
+                  <span data-collapse-icon="orion-skills">+</span>
+                </button>
+                <div data-collapse-panel="orion-skills" class="grid max-h-0 overflow-hidden transition-all duration-300 ease-out">
+                  <ul class="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                    <li class="rounded-2xl bg-amber-50 px-4 py-3 dark:bg-slate-800">Generación de propuestas</li>
+                    <li class="rounded-2xl bg-amber-50 px-4 py-3 dark:bg-slate-800">Calificación de leads</li>
+                    <li class="rounded-2xl bg-amber-50 px-4 py-3 dark:bg-slate-800">Seguimiento post demo</li>
+                  </ul>
+                </div>
+              </article>
+
+              <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Agente 03</p>
+                    <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">Helix Care</h3>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Propietaria: Lara Mendoza</p>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="rounded-full bg-rose-500/10 px-3 py-1 text-xs font-bold text-rose-700 dark:text-rose-300">Crítico</span>
+                    <div class="relative"><button data-dropdown-button="agent-3" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="agent-3" class="hidden absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-950"><button data-modal-open="agent-config" data-detail-key="helix" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Configurar</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div>
+                  </div>
+                </div>
+                <button data-collapse-button="helix-skills" class="mt-6 flex w-full items-center justify-between rounded-2xl bg-slate-100 px-4 py-3 text-left font-semibold text-slate-700 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" type="button" aria-expanded="false">
+                  <span>Skills habilitadas</span>
+                  <span data-collapse-icon="helix-skills">+</span>
+                </button>
+                <div data-collapse-panel="helix-skills" class="grid max-h-0 overflow-hidden transition-all duration-300 ease-out">
+                  <ul class="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                    <li class="rounded-2xl bg-rose-50 px-4 py-3 dark:bg-slate-800">Resumen clínico inicial</li>
+                    <li class="rounded-2xl bg-rose-50 px-4 py-3 dark:bg-slate-800">Detección de urgencias</li>
+                    <li class="rounded-2xl bg-rose-50 px-4 py-3 dark:bg-slate-800">Escalado a humano</li>
+                  </ul>
+                </div>
+              </article>
+
+              <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Agente 04</p>
+                    <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">Nova Ops</h3>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Propietario: Gabriel Ponce</p>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">Activo</span>
+                    <div class="relative"><button data-dropdown-button="agent-4" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="agent-4" class="hidden absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-950"><button data-modal-open="agent-config" data-detail-key="nova" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Configurar</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div>
+                  </div>
+                </div>
+                <button data-collapse-button="nova-skills" class="mt-6 flex w-full items-center justify-between rounded-2xl bg-slate-100 px-4 py-3 text-left font-semibold text-slate-700 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" type="button" aria-expanded="false">
+                  <span>Skills habilitadas</span>
+                  <span data-collapse-icon="nova-skills">+</span>
+                </button>
+                <div data-collapse-panel="nova-skills" class="grid max-h-0 overflow-hidden transition-all duration-300 ease-out">
+                  <ul class="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                    <li class="rounded-2xl bg-emerald-50 px-4 py-3 dark:bg-slate-800">Lectura de órdenes</li>
+                    <li class="rounded-2xl bg-emerald-50 px-4 py-3 dark:bg-slate-800">Predicción de incidencias</li>
+                    <li class="rounded-2xl bg-emerald-50 px-4 py-3 dark:bg-slate-800">Optimización de rutas</li>
+                  </ul>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section data-section="skills" class="page-section hidden space-y-6">
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Catálogo reutilizable</p>
+              <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">Skills disponibles</h3>
+              <p class="mt-3 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">En AgentHub, una skill es una capacidad modular que puede habilitarse en uno o varios agentes para resolver tareas concretas, como clasificar leads, resumir tickets o detectar incidencias críticas.</p>
+              <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <article class="rounded-3xl border border-slate-200 bg-stone-50 p-5 dark:border-slate-800 dark:bg-slate-950"><div class="flex items-start justify-between gap-3"><div><h4 class="text-lg font-black">Lead scoring B2B</h4><p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Prioriza leads según intención, tamaño de cuenta y actividad reciente.</p></div><div class="relative"><button data-dropdown-button="skill-1" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="skill-1" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="skill-detail" data-detail-key="leadscoring" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div></div><p class="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700 dark:text-sky-300">2 agentes habilitados</p></article>
+                <article class="rounded-3xl border border-slate-200 bg-stone-50 p-5 dark:border-slate-800 dark:bg-slate-950"><div class="flex items-start justify-between gap-3"><div><h4 class="text-lg font-black">Resumen de tickets</h4><p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Condensa conversaciones extensas y resalta acciones pendientes.</p></div><div class="relative"><button data-dropdown-button="skill-2" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="skill-2" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="skill-detail" data-detail-key="ticket-summary" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div></div><p class="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">3 agentes habilitados</p></article>
+                <article class="rounded-3xl border border-slate-200 bg-stone-50 p-5 dark:border-slate-800 dark:bg-slate-950"><div class="flex items-start justify-between gap-3"><div><h4 class="text-lg font-black">Detección de urgencias</h4><p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Identifica señales de riesgo y prioriza escalado humano.</p></div><div class="relative"><button data-dropdown-button="skill-3" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="skill-3" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="skill-detail" data-detail-key="urgency" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div></div><p class="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-rose-700 dark:text-rose-300">1 agente habilitado</p></article>
+                <article class="rounded-3xl border border-slate-200 bg-stone-50 p-5 dark:border-slate-800 dark:bg-slate-950"><div class="flex items-start justify-between gap-3"><div><h4 class="text-lg font-black">Optimización de rutas</h4><p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Reduce tiempos de respuesta en operaciones físicas y logísticas.</p></div><div class="relative"><button data-dropdown-button="skill-4" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="skill-4" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="skill-detail" data-detail-key="routing" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" type="button">Eliminar</button></div></div></div><p class="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300">1 agente habilitado</p></article>
+              </div>
+            </div>
+          </section>
+
+          <section data-section="contrataciones" class="page-section hidden space-y-6">
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Pipeline comercial</p>
+                  <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">Contrataciones de agentes</h3>
+                </div>
+                <div class="rounded-2xl bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-700 dark:text-sky-300">4 contratos hardcodeados</div>
+              </div>
+              <div class="mt-6 overflow-x-auto">
+                <table class="min-w-full border-separate border-spacing-y-3">
+                  <thead>
+                    <tr class="text-left text-xs font-semibold uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">
+                      <th class="px-4 py-2">Cliente</th>
+                      <th class="px-4 py-2">Agente</th>
+                      <th class="px-4 py-2">Skills</th>
+                      <th class="px-4 py-2">Inicio</th>
+                      <th class="px-4 py-2">Fin</th>
+                      <th class="px-4 py-2">Importe</th>
+                      <th class="px-4 py-2 text-right">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-sm text-slate-700 dark:text-slate-200">
+                    <tr class="bg-stone-50 shadow-sm dark:bg-slate-950"><td class="rounded-l-2xl px-4 py-4 font-semibold">NorthScale</td><td class="px-4 py-4">Helix Care</td><td class="px-4 py-4">Resumen clínico inicial, Detección de urgencias</td><td class="px-4 py-4">01/06/2026</td><td class="px-4 py-4">01/12/2026</td><td class="px-4 py-4 font-black text-slate-900 dark:text-white">€32.000</td><td class="rounded-r-2xl px-4 py-4 text-right"><div class="relative inline-block"><button data-dropdown-button="contract-1" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="contract-1" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="contract-detail" data-detail-key="northscale" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button></div></div></td></tr>
+                    <tr class="bg-stone-50 shadow-sm dark:bg-slate-950"><td class="rounded-l-2xl px-4 py-4 font-semibold">FluxWorks</td><td class="px-4 py-4">Orion Sales</td><td class="px-4 py-4">Lead scoring B2B, Generación de propuestas</td><td class="px-4 py-4">15/05/2026</td><td class="px-4 py-4">15/11/2026</td><td class="px-4 py-4 font-black text-slate-900 dark:text-white">€21.500</td><td class="rounded-r-2xl px-4 py-4 text-right"><div class="relative inline-block"><button data-dropdown-button="contract-2" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="contract-2" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="contract-detail" data-detail-key="fluxworks" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button></div></div></td></tr>
+                    <tr class="bg-stone-50 shadow-sm dark:bg-slate-950"><td class="rounded-l-2xl px-4 py-4 font-semibold">SignalGrid</td><td class="px-4 py-4">Astra Support</td><td class="px-4 py-4">Resumen de tickets, Clasificación de urgencias</td><td class="px-4 py-4">03/04/2026</td><td class="px-4 py-4">03/10/2026</td><td class="px-4 py-4 font-black text-slate-900 dark:text-white">€18.900</td><td class="rounded-r-2xl px-4 py-4 text-right"><div class="relative inline-block"><button data-dropdown-button="contract-3" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="contract-3" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="contract-detail" data-detail-key="signalgrid" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button></div></div></td></tr>
+                    <tr class="bg-stone-50 shadow-sm dark:bg-slate-950"><td class="rounded-l-2xl px-4 py-4 font-semibold">Delta Assist</td><td class="px-4 py-4">Nova Ops</td><td class="px-4 py-4">Optimización de rutas, Predicción de incidencias</td><td class="px-4 py-4">20/06/2026</td><td class="px-4 py-4">20/12/2026</td><td class="px-4 py-4 font-black text-slate-900 dark:text-white">€27.300</td><td class="rounded-r-2xl px-4 py-4 text-right"><div class="relative inline-block"><button data-dropdown-button="contract-4" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="contract-4" class="hidden absolute right-0 z-10 mt-2 w-40 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="contract-detail" data-detail-key="deltaassist" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button></div></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section data-section="errores" class="page-section hidden space-y-6">
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Observabilidad</p>
+                  <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">Log de errores</h3>
+                </div>
+                <div class="rounded-2xl bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-700 dark:text-rose-300">6 incidencias hardcodeadas</div>
+              </div>
+              <div class="mt-6 space-y-4">
+                <article class="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-stone-50 p-5 dark:border-slate-800 dark:bg-slate-950 sm:flex-row sm:items-center sm:justify-between"><div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">25/06/2026 · 09:12</p><h4 class="mt-2 text-lg font-black">Helix Care</h4><p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Timeout al consultar historial del paciente.</p></div><div class="flex items-center gap-3"><span class="rounded-full bg-rose-500/10 px-3 py-1 text-xs font-bold text-rose-700 dark:text-rose-300">Crítico</span><div class="relative"><button data-dropdown-button="error-1" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="error-1" class="hidden absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="error-detail" data-detail-key="helix-timeout" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/40" type="button">Marcar como resuelto</button></div></div></div></article>
+                <article class="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-stone-50 p-5 dark:border-slate-800 dark:bg-slate-950 sm:flex-row sm:items-center sm:justify-between"><div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">25/06/2026 · 08:40</p><h4 class="mt-2 text-lg font-black">Nova Ops</h4><p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Error de parsing en órdenes de reparto entrantes.</p></div><div class="flex items-center gap-3"><span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">Alto</span><div class="relative"><button data-dropdown-button="error-2" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="error-2" class="hidden absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="error-detail" data-detail-key="nova-parsing" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/40" type="button">Marcar como resuelto</button></div></div></div></article>
+                <article class="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-stone-50 p-5 dark:border-slate-800 dark:bg-slate-950 sm:flex-row sm:items-center sm:justify-between"><div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">24/06/2026 · 18:05</p><h4 class="mt-2 text-lg font-black">Orion Sales</h4><p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Pérdida de contexto al regenerar propuesta comercial.</p></div><div class="flex items-center gap-3"><span class="rounded-full bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-700 dark:text-orange-300">Medio</span><div class="relative"><button data-dropdown-button="error-3" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="error-3" class="hidden absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="error-detail" data-detail-key="orion-context" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/40" type="button">Marcar como resuelto</button></div></div></div></article>
+                <article class="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-stone-50 p-5 dark:border-slate-800 dark:bg-slate-950 sm:flex-row sm:items-center sm:justify-between"><div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">24/06/2026 · 15:24</p><h4 class="mt-2 text-lg font-black">Astra Support</h4><p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Clasificación ambigua de tickets VIP.</p></div><div class="flex items-center gap-3"><span class="rounded-full bg-sky-500/10 px-3 py-1 text-xs font-bold text-sky-700 dark:text-sky-300">Bajo</span><div class="relative"><button data-dropdown-button="error-4" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="error-4" class="hidden absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="error-detail" data-detail-key="astra-vip" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/40" type="button">Marcar como resuelto</button></div></div></div></article>
+                <article class="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-stone-50 p-5 dark:border-slate-800 dark:bg-slate-950 sm:flex-row sm:items-center sm:justify-between"><div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">23/06/2026 · 12:50</p><h4 class="mt-2 text-lg font-black">Nova Ops</h4><p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Reintentos excesivos en predicción de incidencias.</p></div><div class="flex items-center gap-3"><span class="rounded-full bg-violet-500/10 px-3 py-1 text-xs font-bold text-violet-700 dark:text-violet-300">Observación</span><div class="relative"><button data-dropdown-button="error-5" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="error-5" class="hidden absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="error-detail" data-detail-key="nova-retry" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/40" type="button">Marcar como resuelto</button></div></div></div></article>
+                <article class="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-stone-50 p-5 dark:border-slate-800 dark:bg-slate-950 sm:flex-row sm:items-center sm:justify-between"><div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">22/06/2026 · 10:15</p><h4 class="mt-2 text-lg font-black">Helix Care</h4><p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Respuesta incompleta ante solicitud de consentimiento.</p></div><div class="flex items-center gap-3"><span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">Alto</span><div class="relative"><button data-dropdown-button="error-6" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 font-semibold dark:border-slate-700 dark:bg-slate-900" type="button">⋮</button><div data-dropdown-menu="error-6" class="hidden absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><button data-modal-open="error-detail" data-detail-key="helix-consent" class="block w-full rounded-xl px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800" type="button">Ver detalle</button><button class="block w-full rounded-xl px-3 py-2 text-left text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/40" type="button">Marcar como resuelto</button></div></div></div></article>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div id="modal-root">
+      <div data-modal="user-detail" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/55 p-4">
+        <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] bg-white p-6 shadow-2xl dark:bg-slate-900">
+          <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Detalle de usuario</p><h3 id="user-modal-name" class="mt-2 text-2xl font-black text-slate-900 dark:text-white"></h3></div><button data-modal-close class="rounded-2xl border border-slate-200 px-3 py-2 dark:border-slate-700" type="button">Cerrar</button></div>
+          <div class="mt-6 grid gap-4 sm:grid-cols-2 text-sm">
+            <div class="rounded-3xl bg-stone-50 p-4 dark:bg-slate-950"><p class="text-slate-500 dark:text-slate-400">Email</p><p id="user-modal-email" class="mt-2 font-semibold"></p></div>
+            <div class="rounded-3xl bg-stone-50 p-4 dark:bg-slate-950"><p class="text-slate-500 dark:text-slate-400">Plan</p><p id="user-modal-plan" class="mt-2 font-semibold"></p></div>
+            <div class="rounded-3xl bg-stone-50 p-4 dark:bg-slate-950"><p class="text-slate-500 dark:text-slate-400">Estado</p><p id="user-modal-status" class="mt-2 font-semibold"></p></div>
+            <div class="rounded-3xl bg-stone-50 p-4 dark:bg-slate-950"><p class="text-slate-500 dark:text-slate-400">Cuenta</p><p id="user-modal-account" class="mt-2 font-semibold"></p></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-modal="agent-config" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/55 p-4">
+        <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] bg-white p-6 shadow-2xl dark:bg-slate-900">
+          <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Configuración del agente</p><h3 id="agent-modal-name" class="mt-2 text-2xl font-black text-slate-900 dark:text-white"></h3></div><button data-modal-close class="rounded-2xl border border-slate-200 px-3 py-2 dark:border-slate-700" type="button">Cerrar</button></div>
+          <label for="agent-prompt" class="mt-6 block text-sm font-semibold text-slate-700 dark:text-slate-200">Prompt de sistema</label>
+          <textarea id="agent-prompt" rows="10" class="mt-3 w-full rounded-[1.5rem] border border-slate-200 bg-stone-50 px-4 py-4 text-sm leading-6 text-slate-700 outline-none transition focus:border-sky-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div data-modal="skill-detail" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/55 p-4">
+        <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] bg-white p-6 shadow-2xl dark:bg-slate-900">
+          <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Detalle de skill</p><h3 id="skill-modal-name" class="mt-2 text-2xl font-black text-slate-900 dark:text-white"></h3></div><button data-modal-close class="rounded-2xl border border-slate-200 px-3 py-2 dark:border-slate-700" type="button">Cerrar</button></div>
+          <p id="skill-modal-description" class="mt-6 text-sm leading-6 text-slate-600 dark:text-slate-300"></p>
+          <div class="mt-6 rounded-3xl bg-stone-50 p-5 text-sm dark:bg-slate-950"><p class="text-slate-500 dark:text-slate-400">Agentes habilitados</p><p id="skill-modal-enabled" class="mt-2 font-semibold"></p></div>
+        </div>
+      </div>
+
+      <div data-modal="contract-detail" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/55 p-4">
+        <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] bg-white p-6 shadow-2xl dark:bg-slate-900">
+          <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Detalle de contrato</p><h3 id="contract-modal-name" class="mt-2 text-2xl font-black text-slate-900 dark:text-white"></h3></div><button data-modal-close class="rounded-2xl border border-slate-200 px-3 py-2 dark:border-slate-700" type="button">Cerrar</button></div>
+          <div class="mt-6 grid gap-4 sm:grid-cols-3 text-sm">
+            <div class="rounded-3xl bg-stone-50 p-4 dark:bg-slate-950"><p class="text-slate-500 dark:text-slate-400">Agente</p><p id="contract-modal-agent" class="mt-2 font-semibold"></p></div>
+            <div class="rounded-3xl bg-stone-50 p-4 dark:bg-slate-950"><p class="text-slate-500 dark:text-slate-400">Inicio</p><p id="contract-modal-start" class="mt-2 font-semibold"></p></div>
+            <div class="rounded-3xl bg-stone-50 p-4 dark:bg-slate-950"><p class="text-slate-500 dark:text-slate-400">Fin</p><p id="contract-modal-end" class="mt-2 font-semibold"></p></div>
+          </div>
+          <div class="mt-6 rounded-3xl bg-stone-50 p-5 dark:bg-slate-950"><p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Skills y precios</p><ul id="contract-modal-skills" class="mt-3 space-y-3 text-sm"></ul><p id="contract-modal-total" class="mt-5 text-lg font-black text-slate-900 dark:text-white"></p></div>
+        </div>
+      </div>
+
+      <div data-modal="error-detail" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/55 p-4">
+        <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] bg-white p-6 shadow-2xl dark:bg-slate-900">
+          <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Detalle de incidencia</p><h3 id="error-modal-name" class="mt-2 text-2xl font-black text-slate-900 dark:text-white"></h3></div><button data-modal-close class="rounded-2xl border border-slate-200 px-3 py-2 dark:border-slate-700" type="button">Cerrar</button></div>
+          <div class="mt-6 space-y-4 text-sm"><div class="rounded-3xl bg-stone-50 p-4 dark:bg-slate-950"><p class="text-slate-500 dark:text-slate-400">Timestamp</p><p id="error-modal-time" class="mt-2 font-semibold"></p></div><div class="rounded-3xl bg-stone-50 p-4 dark:bg-slate-950"><p class="text-slate-500 dark:text-slate-400">Tipo</p><p id="error-modal-level" class="mt-2 font-semibold"></p></div><div class="rounded-3xl bg-stone-50 p-4 dark:bg-slate-950"><p class="text-slate-500 dark:text-slate-400">Descripción técnica</p><p id="error-modal-description" class="mt-2 leading-6"></p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const sectionMeta = {
+        dashboard: { title: 'Dashboard', kicker: 'Vista activa' },
+        usuarios: { title: 'Gestión de usuarios', kicker: 'Clientes y cuentas' },
+        agentes: { title: 'Gestión de agentes', kicker: 'Orquestación de agentes' },
+        skills: { title: 'Skills', kicker: 'Catálogo reutilizable' },
+        contrataciones: { title: 'Contrataciones', kicker: 'Pipeline comercial' },
+        errores: { title: 'Log de errores', kicker: 'Observabilidad' }
+      };
+
+      const userDetails = {
+        lara: { name: 'Lara Mendoza', email: 'lara@northscale.ai', plan: 'Enterprise', status: 'Activo', account: 'NorthScale' },
+        andres: { name: 'Andrés Costa', email: 'andres@fluxworks.io', plan: 'Growth', status: 'Pendiente', account: 'FluxWorks' },
+        noelia: { name: 'Noelia Ruiz', email: 'noelia@latamops.com', plan: 'Starter', status: 'Prueba', account: 'LatamOps' },
+        paula: { name: 'Paula Serrano', email: 'paula@signalgrid.ai', plan: 'Enterprise', status: 'Activo', account: 'SignalGrid' },
+        gabriel: { name: 'Gabriel Ponce', email: 'gabriel@deltaassist.co', plan: 'Scale', status: 'Onboarding', account: 'Delta Assist' }
+      };
+
+      const agentDetails = {
+        astra: { name: 'Astra Support', prompt: 'Eres Astra Support. Resume tickets entrantes, prioriza urgencias VIP y sugiere la siguiente acción con tono ejecutivo.' },
+        orion: { name: 'Orion Sales', prompt: 'Eres Orion Sales. Califica leads B2B, detecta objeciones y redacta propuestas comerciales con foco en cierre.' },
+        helix: { name: 'Helix Care', prompt: 'Eres Helix Care. Analiza solicitudes médicas, detecta riesgo clínico y deriva a humano cuando identifiques urgencia.' },
+        nova: { name: 'Nova Ops', prompt: 'Eres Nova Ops. Monitorea órdenes logísticas, anticipa incidencias y propone replanificación operativa.' }
+      };
+
+      const skillDetails = {
+        leadscoring: { name: 'Lead scoring B2B', description: 'Evalúa intención, tamaño de cuenta, frecuencia de contacto y señales de compra para priorizar oportunidades de venta.', enabled: 'Orion Sales, Astra Support' },
+        'ticket-summary': { name: 'Resumen de tickets', description: 'Transforma hilos extensos en resúmenes accionables con responsable, estado y próximos pasos.', enabled: 'Astra Support, Helix Care, Nova Ops' },
+        urgency: { name: 'Detección de urgencias', description: 'Señala lenguaje de riesgo, eventos críticos y situaciones que requieren escalado humano inmediato.', enabled: 'Helix Care' },
+        routing: { name: 'Optimización de rutas', description: 'Redistribuye prioridades de entrega según tráfico, capacidad y criticidad operativa.', enabled: 'Nova Ops' }
+      };
+
+      const contractDetails = {
+        northscale: { name: 'NorthScale', agent: 'Helix Care', start: '01/06/2026', end: '01/12/2026', total: 'Total: €32.000', skills: [{ name: 'Resumen clínico inicial', price: '€14.000' }, { name: 'Detección de urgencias', price: '€18.000' }] },
+        fluxworks: { name: 'FluxWorks', agent: 'Orion Sales', start: '15/05/2026', end: '15/11/2026', total: 'Total: €21.500', skills: [{ name: 'Lead scoring B2B', price: '€9.500' }, { name: 'Generación de propuestas', price: '€12.000' }] },
+        signalgrid: { name: 'SignalGrid', agent: 'Astra Support', start: '03/04/2026', end: '03/10/2026', total: 'Total: €18.900', skills: [{ name: 'Resumen de tickets', price: '€8.900' }, { name: 'Clasificación de urgencias', price: '€10.000' }] },
+        deltaassist: { name: 'Delta Assist', agent: 'Nova Ops', start: '20/06/2026', end: '20/12/2026', total: 'Total: €27.300', skills: [{ name: 'Optimización de rutas', price: '€13.300' }, { name: 'Predicción de incidencias', price: '€14.000' }] }
+      };
+
+      const errorDetails = {
+        'helix-timeout': { name: 'Helix Care', time: '25/06/2026 · 09:12', level: 'Crítico', description: 'La consulta al historial del paciente superó el umbral de 10 segundos y el flujo devolvió timeout antes del fallback de escalado.' },
+        'nova-parsing': { name: 'Nova Ops', time: '25/06/2026 · 08:40', level: 'Alto', description: 'El parser no reconoció el formato CSV de entrada y generó pedidos incompletos en el lote de madrugada.' },
+        'orion-context': { name: 'Orion Sales', time: '24/06/2026 · 18:05', level: 'Medio', description: 'La regeneración de la propuesta descartó dos objeciones del cliente porque el contexto del CRM llegó truncado.' },
+        'astra-vip': { name: 'Astra Support', time: '24/06/2026 · 15:24', level: 'Bajo', description: 'La etiqueta VIP no disparó la clasificación esperada en tres tickets, aunque el agente completó la respuesta.' },
+        'nova-retry': { name: 'Nova Ops', time: '23/06/2026 · 12:50', level: 'Observación', description: 'Se detectaron reintentos repetidos sobre eventos ya procesados. No afecta al resultado pero incrementa coste y latencia.' },
+        'helix-consent': { name: 'Helix Care', time: '22/06/2026 · 10:15', level: 'Alto', description: 'La respuesta sobre consentimiento informado omitió una cláusula obligatoria y requiere ajuste del prompt de cumplimiento.' }
+      };
+
+      const root = document.documentElement;
+      const sectionTitle = document.getElementById('section-title');
+      const sectionKicker = document.getElementById('section-kicker');
+      const navLinks = document.querySelectorAll('.nav-link');
+      const pageSections = document.querySelectorAll('.page-section');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+      const openSidebarButton = document.getElementById('open-sidebar');
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = document.getElementById('theme-icon');
+      const themeLabel = document.getElementById('theme-label');
+
+      function closeAllDropdowns() {
+        document.querySelectorAll('[data-dropdown-menu]').forEach((menu) => menu.classList.add('hidden'));
+      }
+
+      function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        sidebarBackdrop.classList.add('hidden');
+      }
+
+      function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        sidebarBackdrop.classList.remove('hidden');
+      }
+
+      function setTheme(theme) {
+        const isDark = theme === 'dark';
+        root.classList.toggle('dark', isDark);
+        themeToggle.setAttribute('aria-pressed', String(isDark));
+        themeIcon.textContent = isDark ? '☾' : '☀';
+        themeLabel.textContent = isDark ? 'Modo claro' : 'Modo oscuro';
+        localStorage.setItem('agenthub-theme', theme);
+      }
+
+      function setActiveSection(sectionName) {
+        pageSections.forEach((section) => {
+          section.classList.toggle('hidden', section.dataset.section !== sectionName);
+        });
+
+        navLinks.forEach((link) => {
+          const isActive = link.dataset.sectionTarget === sectionName;
+          link.classList.toggle('bg-slate-950', isActive);
+          link.classList.toggle('text-white', isActive);
+          link.classList.toggle('shadow-lg', isActive);
+          link.classList.toggle('shadow-slate-300/30', isActive);
+          link.classList.toggle('dark:bg-white', isActive);
+          link.classList.toggle('dark:text-slate-950', isActive);
+        });
+
+        sectionTitle.textContent = sectionMeta[sectionName].title;
+        sectionKicker.textContent = sectionMeta[sectionName].kicker;
+        localStorage.setItem('agenthub-section', sectionName);
+        closeSidebar();
+      }
+
+      function openModal(name) {
+        const modal = document.querySelector(`[data-modal="${name}"]`);
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.classList.add('overflow-hidden');
+      }
+
+      function closeModal(modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        if (!document.querySelector('[data-modal].flex')) {
+          document.body.classList.remove('overflow-hidden');
+        }
+      }
+
+      function fillUserModal(key) {
+        const data = userDetails[key];
+        if (!data) return;
+        document.getElementById('user-modal-name').textContent = data.name;
+        document.getElementById('user-modal-email').textContent = data.email;
+        document.getElementById('user-modal-plan').textContent = data.plan;
+        document.getElementById('user-modal-status').textContent = data.status;
+        document.getElementById('user-modal-account').textContent = data.account;
+      }
+
+      function fillAgentModal(key) {
+        const data = agentDetails[key];
+        if (!data) return;
+        document.getElementById('agent-modal-name').textContent = data.name;
+        document.getElementById('agent-prompt').value = data.prompt;
+      }
+
+      function fillSkillModal(key) {
+        const data = skillDetails[key];
+        if (!data) return;
+        document.getElementById('skill-modal-name').textContent = data.name;
+        document.getElementById('skill-modal-description').textContent = data.description;
+        document.getElementById('skill-modal-enabled').textContent = data.enabled;
+      }
+
+      function fillContractModal(key) {
+        const data = contractDetails[key];
+        if (!data) return;
+        document.getElementById('contract-modal-name').textContent = data.name;
+        document.getElementById('contract-modal-agent').textContent = data.agent;
+        document.getElementById('contract-modal-start').textContent = data.start;
+        document.getElementById('contract-modal-end').textContent = data.end;
+        document.getElementById('contract-modal-total').textContent = data.total;
+        const skillsList = document.getElementById('contract-modal-skills');
+        skillsList.innerHTML = data.skills.map((skill) => `<li class="flex items-center justify-between rounded-2xl bg-white px-4 py-3 dark:bg-slate-900"><span>${skill.name}</span><strong>${skill.price}</strong></li>`).join('');
+      }
+
+      function fillErrorModal(key) {
+        const data = errorDetails[key];
+        if (!data) return;
+        document.getElementById('error-modal-name').textContent = data.name;
+        document.getElementById('error-modal-time').textContent = data.time;
+        document.getElementById('error-modal-level').textContent = data.level;
+        document.getElementById('error-modal-description').textContent = data.description;
+      }
+
+      navLinks.forEach((link) => {
+        link.addEventListener('click', () => setActiveSection(link.dataset.sectionTarget));
+      });
+
+      openSidebarButton.addEventListener('click', openSidebar);
+      sidebarBackdrop.addEventListener('click', closeSidebar);
+
+      themeToggle.addEventListener('click', () => {
+        const nextTheme = root.classList.contains('dark') ? 'light' : 'dark';
+        setTheme(nextTheme);
+      });
+
+      document.querySelectorAll('[data-dropdown-button]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.stopPropagation();
+          const key = button.dataset.dropdownButton;
+          const menu = document.querySelector(`[data-dropdown-menu="${key}"]`);
+          const isHidden = menu.classList.contains('hidden');
+          closeAllDropdowns();
+          if (isHidden) menu.classList.remove('hidden');
+        });
+      });
+
+      document.querySelectorAll('[data-modal-open]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const modalName = button.dataset.modalOpen;
+          const detailKey = button.dataset.detailKey;
+          closeAllDropdowns();
+          if (modalName === 'user-detail') fillUserModal(detailKey);
+          if (modalName === 'agent-config') fillAgentModal(detailKey);
+          if (modalName === 'skill-detail') fillSkillModal(detailKey);
+          if (modalName === 'contract-detail') fillContractModal(detailKey);
+          if (modalName === 'error-detail') fillErrorModal(detailKey);
+          openModal(modalName);
+        });
+      });
+
+      document.querySelectorAll('[data-modal-close]').forEach((button) => {
+        button.addEventListener('click', () => closeModal(button.closest('[data-modal]')));
+      });
+
+      document.querySelectorAll('[data-modal]').forEach((modal) => {
+        modal.addEventListener('click', (event) => {
+          if (event.target === modal) closeModal(modal);
+        });
+      });
+
+      document.querySelectorAll('[data-collapse-button]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const key = button.dataset.collapseButton;
+          const panel = document.querySelector(`[data-collapse-panel="${key}"]`);
+          const icon = document.querySelector(`[data-collapse-icon="${key}"]`);
+          const isExpanded = button.getAttribute('aria-expanded') === 'true';
+          button.setAttribute('aria-expanded', String(!isExpanded));
+          panel.classList.toggle('max-h-0', isExpanded);
+          panel.classList.toggle('max-h-48', !isExpanded);
+          icon.textContent = isExpanded ? '+' : '−';
+        });
+      });
+
+      document.addEventListener('click', () => closeAllDropdowns());
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeAllDropdowns();
+          document.querySelectorAll('[data-modal].flex').forEach((modal) => closeModal(modal));
+          closeSidebar();
+        }
+      });
+
+      const storedTheme = localStorage.getItem('agenthub-theme') || 'light';
+      const storedSection = localStorage.getItem('agenthub-section') || 'dashboard';
+      setTheme(storedTheme);
+      setActiveSection(storedSection);
+    </script>
+  </body>
+</html>
